@@ -17,25 +17,25 @@ function home(){
  app.innerHTML=`<h1>از صفر تا حرفه‌ای،<br>قدم‌به‌قدم</h1>
  <p class="mut">هفت مرحله از A0 تا C2. هر مرحله کلمه، آزمونک، جمله‌سازی و مکالمه دارد. با نمره ۷۰٪ در آزمون نهایی، مرحله بعد باز می‌شود.</p>
  <div class="bar"><i style="width:${done/L.length*100}%"></i></div><p class="mut">${fa(done)} از ${fa(L.length)} مرحله تمام شده · ${fa(S.xp)} امتیاز · ${fa(streak())} روز متوالی</p>
- <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="pl">${S.placed?'آزمون تعیین سطح':'شروع با آزمون تعیین سطح'}</button><button class="btn alt" id="pg">پیشرفت و گواهی</button><button class="btn alt" id="ro">موقعیت‌های واقعی</button><button class="btn alt" id="tc">معلم انگلیسی</button><button class="btn alt" id="vc">واژگان</button><button class="btn alt" id="gr">گرامر</button><button class="btn alt" id="rv">مرور کلمه‌ها (${fa(Object.values(S.rv||{}).filter(r=>r.d<=Date.now()).length)})</button></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="pl">${S.placed?'آزمون تعیین سطح':'شروع با آزمون تعیین سطح'}</button><button class="btn alt" id="pg">پیشرفت و گواهی</button><button class="btn alt" id="ro">موقعیت‌های واقعی</button><button class="btn alt" id="tc">معلم انگلیسی</button><button class="btn alt" id="cm">نقشه دوره</button><button class="btn alt" id="vc">واژگان</button><button class="btn alt" id="gr">گرامر</button><button class="btn alt" id="rv">مرور کلمه‌ها (${fa(Object.values(S.rv||{}).filter(r=>r.d<=Date.now()).length)})</button></div>
  <div class="card" style="margin:10px 0"><p>هدف امروز: <b>${fa(dx)}</b> از ${fa(50)} امتیاز</p><div class="bar"><i style="width:${dx*2}%"></i></div><p>هدف هفته: <b>${fa(wk)}</b> از ${fa(4)} روز فعال</p><div class="bar"><i style="width:${Math.min(100,wk/4*100)}%"></i></div></div>
  ${recHtml()}
  <p class="mut" style="margin-top:10px">سطح شروع: <select id="sl" style="font:inherit">${L.map((l,i)=>`<option value="${i}" ${i==(S.start||0)?'selected':''}>${l.c}</option>`).join('')}</select></p>
  ${done==L.length?'<div class="card good" style="margin:10px 0"><b>تبریک! دوره را کامل کردی. حالا زبان انگلیسی‌ات در سطح حرفه‌ای است.</b></div>':''}
  ${L.map((l,i)=>{const b=S.best[i]||0,ok=b>=70;return `<button class="lv ${ok?'done':''}" data-i="${i}" ${open(i)?'':'disabled'}><span class="code">${ok?'✓':l.c}</span><span><b>${l.n} (${l.c})</b><span class="mut" style="display:block;font-size:.8rem">${fa(Math.ceil(l.w.length/10))} درس · ${fa(l.w.length)} کلمه · ${fa(l.s.length)} جمله · ${fa(l.d.length)} مکالمه · سختی ${'★'.repeat(L.indexOf(l)+1)}</span><span class="mut">${open(i)?(b?'بهترین نمره آزمون: '+fa(b)+'٪':'آماده شروع'):'قفل؛ مرحله قبل را قبول شو'}</span></span></button>`}).join('')}`;
  app.querySelectorAll('.lv').forEach(b=>b.onclick=()=>level(+b.dataset.i,'a'));
- document.getElementById('pl').onclick=placement;document.getElementById('pg').onclick=progress;document.getElementById('rv').onclick=review;document.getElementById('vc').onclick=vocabs;document.getElementById('gr').onclick=grams;document.getElementById('tc').onclick=teacher;document.getElementById('ro').onclick=role;
+ document.getElementById('pl').onclick=placement;document.getElementById('pg').onclick=progress;document.getElementById('rv').onclick=review;document.getElementById('vc').onclick=vocabs;document.getElementById('cm').onclick=curriculum;document.getElementById('gr').onclick=grams;document.getElementById('tc').onclick=teacher;document.getElementById('ro').onclick=role;
  document.getElementById('sl').onchange=e=>{S.start=+e.target.value;save();home()};
 }
 
-const T=[['a','نقشه درس'],['b','الفبا'],['w','کلمه‌ها'],['g','گرامر'],['q','آزمونک'],['s','جمله‌سازی'],['c','مکالمه'],['o','تلفظ'],['p','گفتن'],['m','آزمون گرامر'],['h','تکلیف'],['n','گوش دادن به متن'],['f','گفتار آزاد'],['r','خواندن'],['l','شنیداری'],['x','نوشتن'],['k','آزمون مهارت‌ها'],['e','آزمون نهایی']];
+const T=[['a','نقشه درس'],['b','الفبا'],['w','کلمه‌ها'],['g','گرامر'],['q','آزمونک'],['s','جمله‌سازی'],['j','جای خالی'],['c','مکالمه'],['o','تلفظ'],['p','گفتن'],['m','آزمون گرامر'],['h','تکلیف'],['n','گوش دادن به متن'],['f','گفتار آزاد'],['r','خواندن'],['l','شنیداری'],['x','نوشتن'],['k','آزمون مهارت‌ها'],['e','آزمون نهایی']];
 var CU=0;
 function level(i,t,u=0){
  CU=u;const F=L[i];
  const l=u<0||F.w.length<=10?F:{...F,w:F.w.slice(u*10,u*10+10),s:F.s.slice(u*3,u*3+3),d:F.d.slice(u*3,u*3+3)};
  app.innerHTML=`<button class="back" id="bk">‹ همه مرحله‌ها</button><h2>${l.n} (${l.c})</h2>
  <div class="tabs" role="tablist">${T.filter(x=>x[0]!='b'||i==0).map(x=>`<button class="tab" role="tab" aria-selected="${x[0]==t}" data-t="${x[0]}">${x[1]}</button>`).join('')}</div>
- ${F.w.length>10&&'wqslcp'.includes(t)?`<div class="tabs">${[['درس ۱',0],['درس ۲',1],['درس ۳',2],['درس ۴',3],['درس ۵',4],['درس ۶',5],['همه',-1]].filter(x=>x[1]<Math.ceil(F.w.length/10)).map(x=>`<button class="tab" aria-selected="${x[1]==u}" data-u="${x[1]}">${x[0]}</button>`).join('')}</div><p class="mut">موضوع: ${(TT[i]||[])[u]||'همه درس‌ها'}</p>`:''}<div id="box" class="card"></div>`;
+ ${F.w.length>10&&'wqslcpj'.includes(t)?`<div class="tabs">${[['درس ۱',0],['درس ۲',1],['درس ۳',2],['درس ۴',3],['درس ۵',4],['درس ۶',5],['همه',-1]].filter(x=>x[1]<Math.ceil(F.w.length/10)).map(x=>`<button class="tab" aria-selected="${x[1]==u}" data-u="${x[1]}">${x[0]}</button>`).join('')}</div><p class="mut">موضوع: ${(TT[i]||[])[u]||'همه درس‌ها'}</p>`:''}<div id="box" class="card"></div>`;
  document.getElementById('bk').onclick=home;
  app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>level(i,b.dataset.t,u));
  app.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>level(i,t,+b.dataset.u));
@@ -45,6 +45,7 @@ function level(i,t,u=0){
  if(t=='r')read(i,box);
  if(t=='h')hw(i,box);
  if(t=='a')lmap(i,box);
+ if(t=='j')fill(l,i,box);
  if(t=='b')alpha(box);
  if(t=='k')skills(i,box);
  if(t=='n')lisP(i,box);
@@ -76,7 +77,7 @@ function writ(i,box){const w=[Math.random()<.5?W[i][0]:W2[i],...W[i].slice(1)];S
   document.getElementById('fb').innerHTML=cs.map(c=>`<p class="${c[0]?'good':'badc'}">${c[0]?'✓':'✗'} ${c[1]}</p>`).join('')+`<p class="mut">${ok?'آفرین! همه موارد رعایت شده. متنت را یک بار بلند بخوان.':'موارد ✗ را اصلاح کن و دوباره بررسی کن. متن ذخیره شده است.'}</p>`}}
 const srs=(e,m,ok)=>{S.rv=S.rv||{};const r=S.rv[e]||{b:0};r.b=ok?Math.min(r.b+1,4):0;r.d=Date.now()+[0,1,3,7,14][r.b]*864e5;r.m=m;S.rv[e]=r;save()};
 function review(){const due=Object.entries(S.rv||{}).filter(([,r])=>r.d<=Date.now());
- app.innerHTML='<button class="back" onclick="home()">‹ بازگشت</button><h2>مرور کلمه‌ها</h2><div id="box" class="card" style="margin-top:10px"></div>';
+ app.innerHTML='<button class="back" onclick="home()">‹ بازگشت</button><h2>مرور امروز</h2>'+srsHtml()+'<div id="box" class="card" style="margin-top:10px"></div>';
  const box=document.getElementById('box'),all=L.flatMap(l=>l.w);
  if(!due.length){box.innerHTML='<div class="res"><p>الان کلمه‌ای برای مرور نداری. بعد از آزمونک‌ها، کلمه‌ها به برنامه مرور اضافه می‌شوند و در زمان مناسب برمی‌گردند.</p></div>';return}
  const qs=sh(due).slice(0,10).map(([e,r])=>({k:'w',q:e,l:1,o:[r.m,...sh(all.filter(x=>x[1]!=r.m)).slice(0,3).map(x=>x[1])],a:r.m,f:ok=>srs(e,r.m,ok)}));
@@ -126,7 +127,7 @@ function vocabs(){
  <p><select id="vl" style="font:inherit"><option value="-1">همه سطح‌ها</option>${L.map((l,i)=>`<option value="${i}">${l.c}</option>`).join('')}</select> <input id="vs" dir="ltr" placeholder="جستجو" style="font:inherit;border:2px solid var(--line);border-radius:10px;padding:4px 10px;background:var(--card);color:var(--ink)"></p><div id="box" class="card"></div>`;
  const draw=()=>{const v=+document.getElementById('vl').value,q=document.getElementById('vs').value.trim().toLowerCase();
   const ws=L.flatMap((l,i)=>l.w.map(x=>[...x,l.c,i])).filter(x=>(v<0||x[3]==v)&&(!q||x[0].toLowerCase().includes(q)||x[1].includes(q)));
-  document.getElementById('box').innerHTML=ws.map((w,k)=>`<div class="w"><span class="en" dir="ltr">${w[0]}</span><span class="fa">${w[1]}</span><span class="mut" dir="ltr">${w[2]}</span><button class="sp" data-t="${w[0]}" onclick="say(this.dataset.t)" aria-label="تلفظ">🔊</button></div>`).join('')||'<p class="mut">کلمه‌ای پیدا نشد.</p>'};
+  document.getElementById('box').innerHTML=ws.map((w,k)=>`<div class="w"><span class="en" dir="ltr">${w[0]}</span><span class="fa">${w[1]}</span><span class="mut" dir="ltr">${w[2]}</span><button class="sp" data-t="${w[0]}" onclick="say(this.dataset.t)" aria-label="تلفظ">🔊</button><button class="sp" data-e="${w[0]}" data-m="${w[1]}" data-v="1" aria-label="این کلمه را می‌دانم">✓</button><button class="sp" data-e="${w[0]}" data-m="${w[1]}" data-v="0" aria-label="این کلمه را نمی‌دانم">✗</button></div>`).join('')||'<p class="mut">کلمه‌ای پیدا نشد.</p>';document.getElementById('box').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{srs(b.dataset.e,b.dataset.m,b.dataset.v=='1');b.textContent='✔'})};
  document.getElementById('vl').onchange=draw;document.getElementById('vs').oninput=draw;draw()}
 function grams(){
  app.innerHTML=`<button class="back" onclick="home()">‹ بازگشت</button><h2>گرامر از A0 تا C2</h2><div style="margin-top:10px">${G.map((g,i)=>`<details class="card" style="margin:8px 0"><summary><b>${L[i].c}</b> ${g[0]}</summary><p>${g[1]}</p><div class="q" dir="ltr">${g[2]}</div><p dir="ltr">${g[3]}</p><p class="badc" dir="ltr">${g[4]}</p></details>`).join('')}</div>`}
@@ -166,7 +167,8 @@ function lisP(i,box){const r=[R[i],R2[i],R3[i]][Math.floor(Math.random()*3)],lg=
  box.innerHTML='<p class="mut">متن را گوش بده؛ متن نمایش داده نمی‌شود. هر چند بار بخواهی می‌توانی دوباره پخش کنی.'+(i>=5?' در این سطح لهجه بریتانیایی هم می‌شنوی.':'')+'</p><button class="btn" id="pp">🔊 پخش متن</button> <button class="btn alt" id="pq">شروع سؤال‌ها</button>';
  document.getElementById('pp').onclick=()=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(r[0]);u.lang=lg;u.rate=i<2?.7:.9;speechSynthesis.speak(u)}catch(e){}};
  document.getElementById('pq').onclick=()=>quiz(r.slice(1).map(x=>({k:'r',q:x[0],l:1,o:x.slice(1),a:x[1],ol:1})),box,(s,n)=>end(box,s,n,()=>level(i,'n'),'متن دیگر'))}
-function profile(){app.innerHTML=`<h2>پروفایل</h2><p class="mut">اسمت روی گواهی چاپ می‌شود.</p><input id="pn" value="${(S.name||'').replace(/"/g,'&quot;')}" placeholder="اسم" style="font:inherit;border:2px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card);color:var(--ink);width:100%"><button class="btn" id="ps">ذخیره</button><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><p class="mut">پاک‌کردن همه پیشرفت‌ها در این مرورگر</p><button class="btn alt" id="pr">پاک‌کردن پیشرفت</button>`;
+function profile(){app.innerHTML=`<h2>پروفایل</h2><p class="mut">اسمت روی گواهی چاپ می‌شود.</p><input id="pn" value="${(S.name||'').replace(/"/g,'&quot;')}" placeholder="اسم" style="font:inherit;border:2px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card);color:var(--ink);width:100%"><button class="btn" id="ps">ذخیره</button><p class="mut">ظاهر برنامه</p><select id="th" style="font:inherit;padding:6px"><option value="">خودکار</option><option value="light" ${S.theme=='light'?'selected':''}>روشن</option><option value="dark" ${S.theme=='dark'?'selected':''}>تیره</option></select><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><p class="mut">پاک‌کردن همه پیشرفت‌ها در این مرورگر</p><button class="btn alt" id="pr">پاک‌کردن پیشرفت</button>`;
+ document.getElementById('th').onchange=e=>{S.theme=e.target.value;save();if(S.theme)document.documentElement.setAttribute('data-theme',S.theme);else document.documentElement.removeAttribute('data-theme')};
  document.getElementById('ps').onclick=()=>{S.name=document.getElementById('pn').value.trim();save();home()};
  document.getElementById('pr').onclick=()=>{if(confirm('همه پیشرفت‌ها پاک شود؟')){try{localStorage.removeItem('ep')}catch(e){}location.reload()}}}
 function skills(i,box){S.sk=S.sk||{};const sk=S.sk[i]||{},l=L[i];
@@ -185,6 +187,32 @@ function lmap(i,box){
  box.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>level(i,b.dataset.g,CU))}
 function alpha(box){const w='apple ball cat dog egg fish girl hat ice juice key lion milk name orange pen queen rain sun tea umbrella van water box yes zoo'.split(' ');
  box.innerHTML='<p class="mut">روی هر حرف بزن تا نام حرف و یک کلمه نمونه را بشنوی.</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" dir="ltr">'+w.map((x,k)=>{const c=String.fromCharCode(65+k);return `<button class="chip" data-t="${c}. ${x}" onclick="say(this.dataset.t)"><b>${c}${c.toLowerCase()}</b> ${x}</button>`}).join('')+'</div>'}
+function srsHtml(){const all=L.flatMap(l=>l.w).length,r=Object.values(S.rv||{}),ln=r.filter(x=>x.b==0).length,rv=r.filter(x=>x.b>=1&&x.b<3).length,ms=r.filter(x=>x.b>=3).length,due=r.filter(x=>x.d<=Date.now()).length;
+ return `<div class="card st" style="margin:10px 0"><div><b>${fa(Math.max(0,all-r.length))}</b><span>جدید</span></div><div><b>${fa(ln)}</b><span>در حال یادگیری</span></div><div><b>${fa(rv)}</b><span>در حال مرور</span></div><div><b>${fa(ms)}</b><span>مسلط</span></div></div><p class="mut">امروز ${fa(due)} کلمه برای مرور داری.</p>`}
+function fill(l,i,box){const ws=[...new Set(l.s.flatMap(x=>x[0].replace(/[.,;?!]/g,'').split(' ')))],cl=w=>w.replace(/[.,;?!]/g,'');
+ const qs=sh(l.s).slice(0,6).map(([e,f])=>{const t=e.split(' ');const k=t.reduce((b,w,j)=>cl(w).length>cl(t[b]).length?j:b,0);const raw=t[k],core=cl(raw),tail=raw.slice(core.length);t[k]='_____'+tail;
+  return {k:'s',q:`${t.join(' ')}<br><small>${f}</small>`,l:1,o:[core,...sh(ws.filter(w=>w.toLowerCase()!=core.toLowerCase())).slice(0,3)],a:core,ol:1}});
+ quiz(qs,box,(s,n)=>end(box,s,n,()=>level(i,'j',CU),'دوباره'))}
+const unitKeys=(a,u)=>{const n=CUR.find(l=>l[0]==a)[1][+u][1].length-2;return Array.from({length:n},(_,k)=>a+'-'+u+'-'+k)};
+const ready=key=>{if(LES[key])return true;const [a,u,k]=key.split('-');return +k>=unitKeys(a,u).length&&unitKeys(a,u).every(x=>LES[x])};
+function synth(key){const [a,u,k]=key.split('-'),ks=unitKeys(a,u).map(x=>LES[x]),test=+k==unitKeys(a,u).length+1,pool=sh(ks.flatMap(d=>d[5].split('|')));
+ return [test?'نمره‌ات را در این واحد بسنج (حداقل ۷۰٪).':'مرور مهم‌ترین نکته‌های همه‌ی درس‌های این واحد.',test?'این آزمون از سؤال‌های همه‌ی درس‌های واحد ساخته شده است.':'مثال‌ها و واژگان هر درس را دوباره بخوان و بعد کوییز مرور را بزن.',ks.map(d=>d[2].split('|')[0]).join('|'),ks.map(d=>d[3].split('|').slice(0,2).join('|')).join('|'),ks[ks.length-1][4],pool.slice(0,test?10:6).join('|')]}
+function lessonPage(key){const d=LES[key]||synth(key),[a,u,k]=key.split('-'),title=CUR.find(l=>l[0]==a)[1][+u][1][+k];
+ const sp=(t)=>`<button class="sp" data-t="${t.replace(/"/g,'')}" onclick="say(this.dataset.t)" aria-label="پخش">🔊</button>`;
+ const ex=d[2].split('|').map(x=>x.split('=')),vo=d[3].split('|').map(x=>x.split('=')),qs=d[5].split('|').map(x=>x.split('~'));
+ app.innerHTML=`<button class="back" onclick="curriculum()">‹ نقشه دوره</button><h2 dir="ltr">${title}</h2>
+ <div class="card" style="margin:10px 0"><p><b>هدف:</b> ${d[0]}</p><p>${d[1]}</p></div>
+ <div class="card"><p><b>مثال‌ها</b></p>${ex.map(x=>`<div class="w"><span class="en" dir="ltr" style="min-width:0;flex:1">${x[0]}</span><span class="fa">${x[1]||''}</span>${sp(x[0])}</div>`).join('')}</div>
+ <div class="card" style="margin:10px 0"><p><b>واژگان</b></p>${vo.map(x=>`<div class="w"><span class="en" dir="ltr">${x[0]}</span><span class="fa">${x[1]}</span>${sp(x[0])}</div>`).join('')}</div>
+ <p class="badc">${d[4]}</p><p><b>کوییز درس</b></p><div id="box" class="card"></div>`;
+ const box=document.getElementById('box');
+ quiz(qs.map(q=>({k:'w',q:q[0],l:1,o:q.slice(1),a:q[1],ol:1})),box,(s,n)=>{const ok=s/n>=(+key.split('-')[2]==unitKeys(a,u).length+1?.7:.5);if(ok&&!S.cl[key]){S.cl[key]=1;S.xp+=20;save()}end(box,s,n,()=>lessonPage(key),'دوباره',ok?'<p class="good"><b>درس تمام شد و در نقشه دوره تیک خورد.</b></p>':'<p class="badc">برای تمام‌شدن درس جواب‌های درست کافی نیست؛ دوباره امتحان کن.</p>')})}
+function curriculum(){S.cl=S.cl||{};const key=(a,u,k)=>a+'-'+u+'-'+k;
+ const tu=CUR.reduce((a,l)=>a+l[1].length,0),tl=CUR.reduce((a,l)=>a+l[1].reduce((b,u)=>b+u[1].length,0),0);
+ app.innerHTML=`<button class="back" onclick="home()">‹ بازگشت</button><h2>نقشه کامل دوره</h2><p class="mut">${fa(tu)} واحد و ${fa(tl)} درس. هر درسی را که تمام کردی تیک بزن. متن کامل همه‌ی درس‌ها هنوز ساخته نشده و در حال تکمیل است؛ درس‌های آماده در بخش «سطح‌ها» هستند.</p>`+CUR.map(l=>{const tot=l[1].reduce((b,u)=>b+u[1].length,0),dn=Object.keys(S.cl).filter(k=>k.startsWith(l[0]+'-')).length;
+  return `<details class="card" style="margin:8px 0"><summary><b dir="ltr">${l[0]}</b> · ${fa(l[1].length)} واحد · ${fa(tot)} درس · ${fa(Math.round(dn/tot*100))}٪</summary>`+l[1].map((u,j)=>`<p style="margin:10px 0 2px"><b dir="ltr">Unit ${j+1} — ${u[0]}</b></p>`+u[1].map((t,k)=>`<div class="w"><label style="flex:1;cursor:pointer"><input type="checkbox" data-k="${key(l[0],j,k)}" ${S.cl[key(l[0],j,k)]?'checked':''}> <span dir="ltr">${k+1}. ${t}</span></label>${ready(key(l[0],j,k))?`<button class="sp" data-l="${key(l[0],j,k)}" aria-label="باز کردن درس">📘</button>`:''}</div>`).join('')).join('')+'</details>'}).join('');
+ app.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>lessonPage(b.dataset.l));
+ app.querySelectorAll('input[data-k]').forEach(c=>c.onchange=()=>{if(c.checked)S.cl[c.dataset.k]=1;else delete S.cl[c.dataset.k];save()})}
 function vq(l){
  return sh(l.w).map(([e,f],k)=>{
   const o=sh(l.w.filter(x=>x[0]!=e)).slice(0,3);
@@ -286,6 +314,7 @@ function cert(i){
 function recHtml(){const nx=L.findIndex((l,i)=>(S.best[i]||0)<70&&open(i)),nm={w:'کلمه‌ها',s:'جمله‌سازی',c:'مکالمه'};
  const ws=Object.entries(S.st).filter(([k,v])=>v[1]>=5&&v[0]/v[1]<.7).sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1])[0];
  return `<div class="card" style="margin:10px 0"><p>${nx>=0?`درس پیشنهادی: <b dir="ltr">${L[nx].c}</b> <button class="btn" style="margin:0 8px;padding:4px 14px" onclick="level(${nx},'a')">ادامه</button>`:'همه سطح‌ها را تمام کرده‌ای.'}</p>${ws?`<p class="badc">در بخش «${nm[ws[0]]||ws[0]}» ضعیف‌تری. قبل از رفتن جلوتر، همان بخش را بیشتر تمرین کن.</p>`:''}</div>`}
+try{if(S.theme)document.documentElement.setAttribute('data-theme',S.theme)}catch(e){}
 (()=>{const nv=document.getElementById('nv'),it=[['🏠','خانه',()=>home()],['📖','واژگان',()=>vocabs()],['✍️','گرامر',()=>grams()],['🔁','مرور',()=>review()],['🎓','معلم',()=>teacher()],['📈','پیشرفت',()=>progress()],['👤','پروفایل',()=>profile()]];
  nv.innerHTML=it.map((x,k)=>`<button data-n="${k}"><span>${x[0]}</span>${x[1]}</button>`).join('');
  nv.querySelectorAll('button').forEach(b=>b.onclick=()=>{window.scrollTo(0,0);it[b.dataset.n][2]()})})();
